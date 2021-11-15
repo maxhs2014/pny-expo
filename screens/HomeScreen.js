@@ -189,6 +189,9 @@ export const HomeScreen = ({navigation}) => {
     }).catch(() => setPartyLoading(false))
   }
   useEffect(() => {
+    if (isAtParty) refresh()
+  }, [isAtParty])
+  useEffect(() => {
     AsyncStorage.getItem("em#").then((num) => {if (num) {
         console.log(num)
         setNumber(num)}})
