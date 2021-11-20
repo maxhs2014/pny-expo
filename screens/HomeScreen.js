@@ -189,7 +189,15 @@ export const HomeScreen = ({navigation}) => {
     }).catch(() => setPartyLoading(false))
   }
   useEffect(() => {
-    if (isAtParty) refresh()
+    if (isAtParty) {
+      setParties(prev => {
+        var ps = [...prev]
+        const idx = ps.findIndex(p => p.id == isAtParty.id)
+        console.log("updated party at "+idx)
+        ps[idx] = {...isAtParty,  distance: distance(isAtParty.loc, location.coords), radius: partySize(isAtParty), color: partyColor(isAtParty)}
+        return ps
+      })
+    } else refresh()
   }, [isAtParty])
   useEffect(() => {
     AsyncStorage.getItem("em#").then((num) => {if (num) {
@@ -293,14 +301,14 @@ export const HomeScreen = ({navigation}) => {
           {/*<Text style={{fontSize: 17, color: colors.warning}}>{atParty.police ? atParty.police.length : 0}</Text>*/}
           <View style={{flexDirection: 'row', alignItems: "center"}}>
           <TouchableOpacity onPress={() => changeInfo("good")} style={{flexDirection: 'row', alignItems: "center", paddingHorizontal: 20, paddingVertical: 8}}>
-            <Icon name="thumb-up" size={20} color={userData && isAtParty.good && isAtParty.good.indexOf(userData.id) == -1 ? colors.text : colors.success}/>
-            <Text style={{marginLeft: 4, fontSize: 17, color: userData && isAtParty.good && isAtParty.good.indexOf(userData.id) == -1 ? colors.text : colors.success}}>{isAtParty.good ? isAtParty.good.length : 0}</Text>
+            <Icon name="thumb-up" size={20} color={userData && isAtParty.good && isAtParty.good.indexOf(userData.id) != -1 ? colors.success : colors.text}/>
+            <Text style={{marginLeft: 4, fontSize: 17, color: userData && isAtParty.good && isAtParty.good.indexOf(userData.id) != -1 ? colors.success : colors.text}}>{isAtParty.good ? isAtParty.good.length : 0}</Text>
           </TouchableOpacity>
           </View>
           <View style={{flexDirection: 'row', alignItems: "center"}}>
             <TouchableOpacity onPress={() => changeInfo("bad")} style={{flexDirection: 'row', alignItems: "center", paddingHorizontal: 20, paddingVertical: 8}}>
-              <Icon name="thumb-down" size={20} color={userData && isAtParty.bad && isAtParty.bad.indexOf(userData.id) == -1 ? colors.text : colors.error}/>
-              <Text style={{marginLeft: 4, fontSize: 17, color: userData && isAtParty.bad && isAtParty.bad.indexOf(userData.id) == -1 ? colors.text : colors.error}}>{isAtParty.bad ? isAtParty.bad.length : 0}</Text>
+              <Icon name="thumb-down" size={20} color={userData && isAtParty.bad && isAtParty.bad.indexOf(userData.id) != -1 ? colors.error : colors.text}/>
+              <Text style={{marginLeft: 4, fontSize: 17, color: userData && isAtParty.bad && isAtParty.bad.indexOf(userData.id) != -1 ? colors.error : colors.text}}>{isAtParty.bad ? isAtParty.bad.length : 0}</Text>
             </TouchableOpacity>
           </View>
           <View style={{flexDirection: 'row', alignItems: "center", justifyContent: "center"}}>

@@ -64,6 +64,16 @@ export const IOSButton = (props) => {
         width: "100%",
         alignItems: "center",
         justifyContent: "center"
+      },
+      text_text: {
+        fontSize: 17,
+        color: theme.colors[props.ap],
+        height: 20
+      },
+      text: {
+        backgroundColor: "red",
+        justifyContent: "center",
+        height: 20
       }
     });
 
@@ -75,5 +85,25 @@ export const IOSButton = (props) => {
 };
 
 export default IOSButton
+
+export const TextButton = (props) => {
+  const theme = useTheme()
+
+  const styles = StyleSheet.create({
+    text_text: {
+      fontSize: 17,
+      color: theme.colors[props.ap],
+    },
+    text: {
+      transform: [{translateY: 3}]
+    }
+  });
+
+return (
+  <TouchableWithoutFeedback style={[styles["text"], {marginTop: props.top ? 16 : 0, zIndex: 10}]} onPress={props.onPress}>
+    <Text style={styles[`text_text`]}>{props.title}</Text>
+  </TouchableWithoutFeedback>
+);
+};
 
 

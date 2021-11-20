@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { View, TextInput, Logo, Button, FormErrorMessage } from '../components';
+import { TextInput, Logo, Button, FormErrorMessage } from '../components';
 import { Images, Colors, auth } from '../config';
 import { useTogglePasswordVisibility } from '../hooks';
 import { signupValidationSchema } from '../utils';
-import IOSButton from '../components/IOSButton';
+import IOSButton, { TextButton } from '../components/IOSButton';
+import { useTheme } from '@react-navigation/native';
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState('');
+  const {colors} = useTheme()
 
   const {
     passwordVisibility,
@@ -107,6 +109,16 @@ export const SignupScreen = ({ navigation }) => {
                 <FormErrorMessage error={errorState} visible={true} />
               ) : null}
               {/* Signup button */}
+              <Text style={{color: colors.text, flexDirection: "row", width: "100%", fontSize: 17, textAlign: "center"}}>By using Party Near You you are agreeing to our <TextButton
+                  ap="primary"
+                  title={'Terms of Service'}
+                  onPress={() => navigation.navigate('Login')}
+                /> and <TextButton
+                style="text"
+                ap="primary"
+                title={'Privacy Policy'}
+                onPress={() => navigation.navigate('Login')}
+              /></Text>
               <IOSButton style="filled" ap="primary" title="Signup" onPress={handleSubmit} top/>
             </>
           )}
@@ -136,7 +148,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '700',
     color: Colors.black,
-    paddingTop: 20
+    //paddingTop: 20
   },
   button: {
     width: '100%',
