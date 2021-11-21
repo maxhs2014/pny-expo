@@ -90,9 +90,11 @@ export const HomeScreen = ({navigation}) => {
       var docs = []
       partyPromises.forEach((bound) => bound.forEach(party => docs.push({...party.data(), id: party.id})))
       docs = docs.map(doc => ({...doc, distance: distance(doc.loc, location.coords), radius: partySize(doc), color: partyColor(doc)})).sort((a, b) => a.distance - b.distance)
-      //console.log(JSON.stringify(docs[0]))
+      console.log(JSON.stringify(docs))
       setRefreshing(false)
+      console.log("got here")
       setParties(docs)
+      
     })
   }
 
@@ -117,7 +119,7 @@ export const HomeScreen = ({navigation}) => {
         latitudeDelta: 0.025,
         longitudeDelta: 0.025,
       })
-      mapRef.current.animateToRegion({
+      if (mapRef.current) mapRef.current.animateToRegion({
         latitude: location.coords.latitude-0.025/10,
         longitude: location.coords.longitude,
         latitudeDelta: 0.025,
@@ -189,7 +191,8 @@ export const HomeScreen = ({navigation}) => {
     }).catch(() => setPartyLoading(false))
   }
   useEffect(() => {
-    if (isAtParty) {
+    if (isAtParty && location) {
+      console.log("isAtParty: "+JSON.stringify(isAtParty))
       setParties(prev => {
         var ps = [...prev]
         const idx = ps.findIndex(p => p.id == isAtParty.id)
@@ -197,7 +200,7 @@ export const HomeScreen = ({navigation}) => {
         ps[idx] = {...isAtParty,  distance: distance(isAtParty.loc, location.coords), radius: partySize(isAtParty), color: partyColor(isAtParty)}
         return ps
       })
-    } else refresh()
+    } else if (location) refresh()
   }, [isAtParty])
   useEffect(() => {
     AsyncStorage.getItem("em#").then((num) => {if (num) {
@@ -284,7 +287,7 @@ export const HomeScreen = ({navigation}) => {
         
         {/*parties.map((party) => <Marker key={party.id} coordinate={{latitude: party.loc.latitude, longitude: party.loc.longitude}}><View style={{width: partySize(party), height: partySize(party), backgroundColor: colors.infoTransparent, borderRadius: partySize(party)/2, borderWidth: 2, borderStyle: "solid", borderColor: "#fff"}} />
           </Marker>)*/}
-          {parties.filter(doc => Object.keys(doc).filter(field => field.substring(0, 5) == "user_" && doc[field]).map((field) => field.substring(5)).some(r=> [...userData.friends, userData.id].indexOf(r) >= 0)).map((party) => <Circle fillColor={colors[party.color]} strokeColor="#fff" key={party.id} center={{latitude: party.loc.latitude, longitude: party.loc.longitude}} radius={party.radius}></Circle>)}
+          {parties.filter(doc => Object.keys(doc).filter(field => field.substring(0, 5) == "user_" && doc[field]).map((field) => field.substring(5)).some(r=> userData.friends ? [...userData.friends, userData.id].indexOf(r) >= 0 : [userData.id].indexOf(r) >= 0)).map((party) => <Circle fillColor={colors[party.color]} strokeColor="#fff" key={party.id} center={{latitude: party.loc.latitude, longitude: party.loc.longitude}} radius={party.radius}></Circle>)}
 
           {location&&<Marker
         coordinate={location.coords}

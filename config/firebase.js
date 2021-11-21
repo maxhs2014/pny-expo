@@ -142,15 +142,38 @@ export function searchUsername(q) {
   if (q && q.length > 0) return getDocs(query(collection(firestore, "users"), orderBy("username"), startAt(q), endAt(q + "\uf8ff")))
   return []
 }
-export function requestFriend(uid) {
+export function requestFriend(uid, user) {
   return new Promise(async (resolve, reject) => {
     const modFriend = {incomingRequests: arrayUnion(auth.currentUser.uid)}
     await updateDoc(doc(firestore, "users", uid), modFriend)
+    var friend = await getDoc(doc(firestore, "users", uid))
+    friend = {...friend.data(), id: friend.id}
 
     const modSelf = {outgoingRequests: arrayUnion(uid)}
     await updateDoc(doc(firestore, "users", auth.currentUser.uid), modSelf)
+
+    if (friend.pushToken) sendPushNotification(user, friend)
     resolve()
   })
+}
+
+export function sendPushNotification(from, to) {
+  const message = {
+    to: to.pushToken,
+    sound: 'default',
+    title: `${from.username} sent you a friend request`,
+    body: `${from.username} (${from.name}) wants to add you as their friend. Press to see what parties they are at.`,
+  };
+
+  fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
 }
 
 export function declineRequest(uid) {
@@ -184,6 +207,13 @@ export function acceptRequest(uid) {
     await updateDoc(doc(firestore, "users", auth.currentUser.uid), modSelf)
     resolve()
   })
+}
+
+export function getAdID() {
+  const testID = 'ca-app-pub-3940256099942544/6300978111';
+  const productionID = 'ca-app-pub-5790083206239403/4089514200';
+  // Is a real device and running in production.
+  return Constants.isDevice && !__DEV__ ? productionID : testID;
 }
 
 export { auth, firestore };

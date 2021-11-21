@@ -9,12 +9,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IOSButton from '../components/IOSButton';
 import { useTheme } from '@react-navigation/native';
 import { useAtParty, useparty } from '../hooks';
-import { attendParty, getUsers, leaveParty, reportInfo } from '../config/firebase';
+import { attendParty, getAdID, getUsers, leaveParty, reportInfo, requestFriend } from '../config/firebase';
 import * as Linking from 'expo-linking';
 import { useUserData } from '../hooks/useUserData';
 import Friend from '../components/Friend';
 import { Icon } from '../components';
 import PersonRequest from '../components/Person';
+import { AdMobBanner } from 'expo-ads-admob';
 
 export const PartyInfoScreen = ({navigation, route}) => {
   const {colors} = useTheme()
@@ -38,6 +39,10 @@ export const PartyInfoScreen = ({navigation, route}) => {
   useEffect(() => {
     if (isAtParty && isAtParty.id == party.id) setParty(isAtParty)
   }, [isAtParty])
+
+  const doAddFriend = (user) => {
+    requestFriend(user.id, userData).then(() => Alert.alert("Friend Request Sent", `${user.username} requested`))
+  }
   // const [location, setLocation] = useState(null);
 
   /*useEffect(() => {
@@ -94,14 +99,23 @@ export const PartyInfoScreen = ({navigation, route}) => {
               <Text style={{marginLeft: 4, fontSize: 17, color: "#fff"}}>{Object.keys(party).filter(field => field.substring(0, 5) == "user_" && party[field]).length || 0}</Text>
             </View>
         </View>}
+        {/*<View style={{width: "100%", alignItems: "center"}}>
+        <AdMobBanner
+          bannerSize="largeBanner"
+          adUnitID={getAdID()} // Test ID, Replace with your-admob-unit-id
+          servePersonalizedAds // true or false 
+          style={{marginTop: 32}}
+        />
+      </View>*/}
         <View style={{margin: 32}}>
           <IOSButton style="filled" ap="primary" title="Directions" onPress={() => openDirections()}/>
         </View>
+        
         <View style={{marginHorizontal: 16}}>
           {partyFriends.length > 0 && <Text style={{fontSize: 26, color: "#fff", fontWeight: "800"}}>{isAtParty && isAtParty.id == party.id ? "People At Party" : "Friends At Party"}</Text>}
           {partyFriends.sort((a, b) => b.score-a.score).map(q => userData.friends && userData.friends.indexOf(q.id) !== -1 ? <Friend key={q.id} user={q} remove={() => removeFriend(q.id)} border /> : <PersonRequest key={q.id} user={q} onRequest={() => doAddFriend(q)} />)}
         </View>  
-        </ScrollView> 
+      </ScrollView> 
     </View>
   );
 };

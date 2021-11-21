@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import IOSButton from '../components/IOSButton';
 import { useTheme } from '@react-navigation/native';
 import { useAtParty, useparty } from '../hooks';
-import { acceptRequest, attendParty, declineRequest, getUsers, leaveParty, removeFriend, reportInfo, updateUserData, usernameExists, usernameLookUp } from '../config/firebase';
+import { acceptRequest, attendParty, declineRequest, getAdID, getUsers, leaveParty, removeFriend, reportInfo, updateUserData, usernameExists, usernameLookUp } from '../config/firebase';
 import * as Linking from 'expo-linking';
 import { TextInput } from '../components';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -17,6 +17,7 @@ import { useUserData } from '../hooks/useUserData';
 import Person from '../components/Person';
 import FriendRequest from '../components/FriendRequest';
 import Friend from '../components/Friend';
+import { AdMobBanner } from 'expo-ads-admob';
 
 export const FriendsScreen = ({navigation, route}) => {
   const {colors} = useTheme()
@@ -76,6 +77,14 @@ export const FriendsScreen = ({navigation, route}) => {
     
     <View style={styles.container}>
         <ScrollView style={{marginHorizontal: 16}}>
+          {/*<View style={{width: "100%", alignItems: "center"}}>
+            <AdMobBanner
+              bannerSize="largeBanner"
+              adUnitID={getAdID()} // Test ID, Replace with your-admob-unit-id
+              servePersonalizedAds // true or false 
+              style={{marginVertical: 32}}
+            />
+  </View>*/}
           {isAtParty && <IOSButton style="filled" ap="primary" title="People At Party" onPress={() => navigation.navigate("PartyPeople")} />}
           {requests.length > 0 && <Text style={{fontSize: 26, color: "#fff", fontWeight: "800"}}>Friend Requests</Text>}
           {requests.map(q => <FriendRequest key={q.id} user={q} accept={() => acceptRequest(q.id)} decline={() => declineRequest(q.id)} />)}
