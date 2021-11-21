@@ -188,6 +188,8 @@ export const HomeScreen = ({navigation}) => {
   };
 
   const atParty = () => {
+
+    console.log("amazing")
     setPartyLoading(true)
     setShoot(true)
     attendParty(parties, location.coords).then(() => {
