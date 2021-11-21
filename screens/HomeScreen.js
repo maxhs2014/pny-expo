@@ -76,15 +76,7 @@ export const HomeScreen = ({navigation}) => {
     })();
   }, []);
 
-  useEffect(() => {
-    if (location) {
-      console.log("getting parties")
-      
-        refresh()
-    }
-  }, [location])
-
-  const refresh = () => {
+  const refresh = () => new Promise((resolve, reject) =>  {
     setRefreshing(true)
     listenParties(location.coords, 10000).then((partyPromises) => {
       var docs = []
@@ -94,9 +86,21 @@ export const HomeScreen = ({navigation}) => {
       setRefreshing(false)
       console.log("got here")
       setParties(docs)
-      
+      resolve(docs)
+    }).catch((err) => {
+      reject(err)
     })
-  }
+  })
+
+  useEffect(() => {
+    if (!isAtParty && location && parties && parties.length > 0) {
+      refresh().then((docs) => {
+        if (docs.length > 0 && docs[0].distance < docs[0].radius) atParty()
+      }).catch(() => {})
+    } else if (isAtParty && location && parties && parties.length > 0) {
+      if (isAtParty.distance > isAtParty.radius) leaveParty(isAtParty.id)
+    } else if (location) refresh()
+  }, [location, isAtParty])
 
   const reCenter = () => {
     
@@ -324,7 +328,7 @@ export const HomeScreen = ({navigation}) => {
         <View style={{margin: 32, marginTop: 0}}>
           {/*<IOSButton style="filled" ap="warning" title="Report Police" onPress={() => reportInfo(isAtParty.id, "police")}/>*/}
           <IOSButton style="filled" ap="info" title="Emergency Contact" onPress={() => Linking.openURL("tel:"+number)} top />
-          <IOSButton onPress={() => partyLoading ? {} : leaveParty(isAtParty.id)} style="filled" ap="primary" title={partyLoading ? <ActivityIndicator /> : "Exit Party Mode"} top />
+          {/*<IOSButton onPress={() => partyLoading ? {} : leaveParty(isAtParty.id)} style="filled" ap="primary" title={partyLoading ? <ActivityIndicator /> : "Exit Party Mode"} top />*/}
         </View>
       </View>}
       {location && !isAtParty && <View style={{position: "absolute", bottom: insets.bottom, width: "100%"}}>
