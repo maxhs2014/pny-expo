@@ -89,7 +89,7 @@ export const AddFriendScreen = ({navigation, route}) => {
     });
   }, [navigation]);
   const doAddFriend = (user) => {
-    requestFriend(user.id).then(() => Alert.alert("Friend Request Sent", `${user.username} requested`))
+    requestFriend(user.id, userData).then(() => Alert.alert("Friend Request Sent", `${user.username} requested`))
   }
   return (
     
