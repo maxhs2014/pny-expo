@@ -206,7 +206,7 @@ export const HomeScreen = ({navigation}) => {
         ps[idx] = {...isAtParty,  distance: distance(isAtParty.loc, location.coords), radius: partySize(isAtParty), color: partyColor(isAtParty)}
         return ps
       })
-    } else if (location) refresh()
+    }
   }, [isAtParty])
   useEffect(() => {
     AsyncStorage.getItem("em#").then((num) => {if (num) {
