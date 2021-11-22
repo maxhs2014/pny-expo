@@ -1,11 +1,19 @@
 import { useEffect, useState, useContext } from 'react';
-import { firestore, partiesListener } from '../config/firebase';
+import { distance, firestore, partiesListener } from '../config/firebase';
 import { AuthenticatedUserContext } from '../providers';
 
 export const useAtParty = () => {
   // password will not be initially visible
   const [currentParty, setCurrentParty] = useState(null);
   const { user, setUser } = useContext(AuthenticatedUserContext);
+
+  const partySize = (party) => {
+    var attendance = Object.keys(party).filter(field => field.substring(0, 5) == "user_" && party[field]).length
+    attendance = (5*attendance)
+    if (attendance > 0) attendance+=100
+    //const attendance = 30
+    return attendance
+  }
 
   useEffect(() => {
     // function that toggles password visibility on a TextInput component on a confirm password field

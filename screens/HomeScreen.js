@@ -95,10 +95,10 @@ export const HomeScreen = ({navigation}) => {
   useEffect(() => {
     if (!isAtParty && location && parties && parties.length > 0) {
       refresh().then((docs) => {
-        if (docs.length > 0 && docs[0].distance < docs[0].radius) atParty()
+        if (docs.length > 0 && docs[0].distance < 0.1) atParty()
       }).catch(() => {})
-    } else if (isAtParty && location && parties && parties.length > 0) {
-      if (isAtParty.distance > isAtParty.radius) leaveParty(isAtParty.id)
+    } else if (isAtParty && location) {
+      if (distance(isAtParty.loc, location.coords) > 0.1) leaveParty(isAtParty.id)
     } else if (location) refresh()
   }, [location, isAtParty])
 
