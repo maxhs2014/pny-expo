@@ -194,6 +194,7 @@ export const HomeScreen = ({navigation}) => {
     setShoot(true)
     attendParty(parties, location.coords).then(() => {
       setPartyLoading(false)
+      refresh()
     }).catch(() => setPartyLoading(false))
   }
   useEffect(() => {
@@ -293,7 +294,7 @@ export const HomeScreen = ({navigation}) => {
         
         {/*parties.map((party) => <Marker key={party.id} coordinate={{latitude: party.loc.latitude, longitude: party.loc.longitude}}><View style={{width: partySize(party), height: partySize(party), backgroundColor: colors.infoTransparent, borderRadius: partySize(party)/2, borderWidth: 2, borderStyle: "solid", borderColor: "#fff"}} />
           </Marker>)*/}
-          {parties.filter(doc => Object.keys(doc).filter(field => field.substring(0, 5) == "user_" && doc[field]).map((field) => field.substring(5)).some(r=> userData.friends ? [...userData.friends, userData.id].indexOf(r) >= 0 : [userData.id].indexOf(r) >= 0)).map((party) => <Circle fillColor={colors[party.color]} strokeColor="#fff" key={party.id} center={{latitude: party.loc.latitude, longitude: party.loc.longitude}} radius={party.radius}></Circle>)}
+          {parties.filter(doc => Object.keys(doc).filter(field => field.substring(0, 5) == "user_" && doc[field]).map((field) => field.substring(5)).some(r=> userData && userData.friends ? [...userData.friends, userData.id].indexOf(r) >= 0 : [userData.id].indexOf(r) >= 0)).map((party) => <Circle fillColor={colors[party.color]} strokeColor="#fff" key={party.id} center={{latitude: party.loc.latitude, longitude: party.loc.longitude}} radius={party.radius}></Circle>)}
 
           {location&&<Marker
         coordinate={location.coords}
