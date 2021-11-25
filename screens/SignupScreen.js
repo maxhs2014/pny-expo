@@ -10,6 +10,7 @@ import { useTogglePasswordVisibility } from '../hooks';
 import { signupValidationSchema } from '../utils';
 import IOSButton, { TextButton } from '../components/IOSButton';
 import { useTheme } from '@react-navigation/native';
+import * as Linking from "expo-linking"
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState('');
@@ -111,13 +112,13 @@ export const SignupScreen = ({ navigation }) => {
               {/* Signup button */}
               <Text style={{color: colors.text, flexDirection: "row", width: "100%", fontSize: 17, textAlign: "center"}}>By using Party Near You you are agreeing to our <TextButton
                   ap="primary"
-                  title={'Terms of Service'}
-                  onPress={() => navigation.navigate('Login')}
+                  title={'Terms and Conditions'}
+                  onPress={() => Linking.openURL("https://maxhs2014.github.io/PartyNearYou/TermsAndConditions.html")}
                 /> and <TextButton
                 style="text"
                 ap="primary"
                 title={'Privacy Policy'}
-                onPress={() => navigation.navigate('Login')}
+                onPress={() => Linking.openURL("https://maxhs2014.github.io/PartyNearYou/PrivacyPolicy.html")}
               /></Text>
               <IOSButton style="filled" ap="primary" title="Signup" onPress={handleSubmit} top/>
             </>

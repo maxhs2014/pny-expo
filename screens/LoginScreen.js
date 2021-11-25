@@ -19,9 +19,9 @@ export const LoginScreen = ({ navigation }) => {
 
   const handleLogin = values => {
     const { email, password } = values;
-    signInWithEmailAndPassword(auth, email, password).catch(error =>
+    signInWithEmailAndPassword(auth, email, password).catch(error => {
       setErrorState(error.message)
-    );
+    });
   };
   return (
       <View style={[styles.container, {backgroundColor: colors.background}]}>

@@ -266,7 +266,7 @@ export const HomeScreen = ({navigation}) => {
         <Button onPress={() => navigation.navigate("Profile")} title="Profile" />
       ),
       headerLeft: () => (
-        <Button onPress={() => navigation.navigate("Friends")} title="Friends" />
+        <Button onPress={() => navigation.navigate("Friends")} title={`Friends${userData && userData.incomingRequests && userData.incomingRequests.length > 0 ? " ("+userData.incomingRequests.length+")" : ""}`} />
       ),
       title: isAtParty ? "Party Mode" : "Party Near You"
     });
