@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Formik } from 'formik';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
 import { passwordResetSchema } from '../utils';
 import { Colors, auth } from '../config';
-import { View, TextInput, Button, FormErrorMessage } from '../components';
+import { TextInput, FormErrorMessage } from '../components';
 import IOSButton from '../components/IOSButton';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export const ForgotPasswordScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState('');
@@ -23,7 +24,8 @@ export const ForgotPasswordScreen = ({ navigation }) => {
   };
 
   return (
-    <View isSafe style={styles.container}>
+    <View style={styles.container}>
+      <KeyboardAwareScrollView>
       <Formik
         initialValues={{ email: '' }}
         validationSchema={passwordResetSchema}
@@ -37,7 +39,7 @@ export const ForgotPasswordScreen = ({ navigation }) => {
           handleSubmit,
           handleBlur
         }) => (
-          <>
+          <View>
             {/* Email input field */}
             <TextInput
               name='email'
@@ -56,17 +58,19 @@ export const ForgotPasswordScreen = ({ navigation }) => {
               <FormErrorMessage error={errorState} visible={true} />
             ) : null}
             {/* Password Reset Send Email  button */}
-            <IOSButton style="filled" ap="primary" onPress={handleSubmit} title="Send Reset Email"/>
-          </>
+            <IOSButton style={"filled"} ap="primary" onPress={handleSubmit} title="Send Password Reset" top />
+          </View>
         )}
       </Formik>
       {/* Button to navigate to Login screen */}
-      <Button
-        style={styles.borderlessButtonContainer}
-        borderless
+      <IOSButton
+        style="ghost"
+        ap="primary"
         title={'Go back to Login'}
         onPress={() => navigation.navigate('Login')}
+        top
       />
+      </KeyboardAwareScrollView>
     </View>
   );
 };
