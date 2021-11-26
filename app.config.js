@@ -33,7 +33,7 @@ export default {
     },
     ios: {
       supportsTablet: false,
-      buildNumber: "20",
+      buildNumber: "21",
       bundleIdentifier: "com.partynearyou.app",
       config: {
         googleMobileAdsAppId: "ca-app-pub-5790083206239403~2410650773" // sample id, replace with your own
