@@ -16,6 +16,7 @@ import { useUserData } from '../hooks/useUserData';
 import * as Linking from "expo-linking"
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import { LocationActivityType } from 'expo-location';
 
 export const HomeScreen = ({navigation}) => {
   const {colors} = useTheme()
@@ -36,6 +37,7 @@ export const HomeScreen = ({navigation}) => {
   const confetti = useRef()
   const [shoot, setShoot] = useState(false)
   const [animatedRegionChange, setAnimatedRegionChange] = useState(false)
+  const [updateCount, setUpdateCount] = useState(0)
 
   useEffect(() => {
     (async () => {
@@ -45,7 +47,7 @@ export const HomeScreen = ({navigation}) => {
         return;
       }
 
-      let unsubscribeLocationChange = await Location.watchPositionAsync({}, (loc) => {
+      let unsubscribeLocationChange = await Location.watchPositionAsync({accuracy: Location.Accuracy.BestForNavigation, activityType: Location.ActivityType.Fitness, distanceInterval: 1}, (loc) => {
         setRegion({
           latitude: loc.coords.latitude,
           longitude: loc.coords.longitude,
@@ -70,6 +72,10 @@ export const HomeScreen = ({navigation}) => {
           .start();*/
         }
         if (location == null) setAnimatedRegionChange(true)
+        console.log("location update")
+        if (updateCount < 100) setUpdateCount(prev => prev+1)
+        else setUpdateCount(0)
+        console.log(updateCount)
         setLocation(loc);
       });
       return unsubscribeLocationChange
@@ -77,6 +83,7 @@ export const HomeScreen = ({navigation}) => {
   }, []);
 
   const refresh = () => new Promise((resolve, reject) =>  {
+    console.log("refreshing")
     setRefreshing(true)
     listenParties(location.coords, 10000).then((partyPromises) => {
       var docs = []
@@ -84,7 +91,6 @@ export const HomeScreen = ({navigation}) => {
       docs = docs.map(doc => ({...doc, distance: distance(doc.loc, location.coords), radius: partySize(doc), color: partyColor(doc)})).sort((a, b) => a.distance - b.distance)
       console.log(JSON.stringify(docs))
       setRefreshing(false)
-      console.log("got here")
       setParties(docs)
       resolve(docs)
     }).catch((err) => {
@@ -93,13 +99,13 @@ export const HomeScreen = ({navigation}) => {
   })
 
   useEffect(() => {
-    if (!isAtParty && location && parties && parties.length > 0) {
+    if (!isAtParty && location && parties && parties.length > 0 && updateCount>100) {
       refresh().then((docs) => {
         if (docs.length > 0 && docs[0].distance < 0.1) atParty()
       }).catch(() => {})
     } else if (isAtParty && location) {
       if (distance(isAtParty.loc, location.coords) > 0.1) leaveParty(isAtParty.id)
-    } else if (location) refresh()
+    } else if (location && updateCount>100) refresh()
   }, [location, isAtParty])
 
   const reCenter = () => {

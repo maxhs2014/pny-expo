@@ -12,6 +12,12 @@ export default {
         {
           userTrackingPermission: "This identifier will be used to deliver personalized ads to you."
         }
+      ],
+      [
+        "expo-tracking-transparency",
+        {
+          userTrackingPermission: "This identifier will be used to deliver personalized ads to you."
+        }
       ]
     ],
     version: '1.0.0',
@@ -33,7 +39,7 @@ export default {
     },
     ios: {
       supportsTablet: false,
-      buildNumber: "22",
+      buildNumber: "23",
       bundleIdentifier: "com.partynearyou.app",
       config: {
         googleMobileAdsAppId: "ca-app-pub-5790083206239403~2410650773" // sample id, replace with your own

@@ -10,7 +10,7 @@ import { auth } from '../config';
 import { Alert, useColorScheme } from 'react-native';
 import { useAtParty } from '../hooks';
 import { useUserData } from '../hooks/useUserData';
-import { setTestDeviceIDAsync } from 'expo-ads-admob';
+import { requestPermissionsAsync, setTestDeviceIDAsync } from 'expo-ads-admob';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { updateUserData } from '../config/firebase';
@@ -40,6 +40,7 @@ export const RootNavigator = () => {
       auth,
       authenticatedUser => {
         authenticatedUser ? setUser(authenticatedUser) : setUser(null);
+        if (authenticatedUser) requestPermissionsAsync()
         setIsLoading(false);
       }
     );

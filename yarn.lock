@@ -3198,6 +3198,14 @@ expo-notifications@~0.13.3:
     unimodules-task-manager-interface "~7.0.3"
     uuid "^3.4.0"
 
+expo-tracking-transparency@~2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/expo-tracking-transparency/-/expo-tracking-transparency-2.0.3.tgz#74b7ca5023ebdc6e541f74ffc8d9a22901ad1107"
+  integrity sha512-Whtzj+bFW3j3udQ8dHgd/oQKBwcb3yeIaFgBXnEWXZfyYS6que5lG0nt+dMC6zYiG54Wg5ceVb0yyU0RmqX2rA==
+  dependencies:
+    "@expo/config-plugins" "^4.0.2"
+    expo-modules-core "~0.4.4"
+
 expo@~43.0.0:
   version "43.0.0"
   resolved "https://registry.npmjs.org/expo/-/expo-43.0.0.tgz"
