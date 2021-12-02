@@ -47,15 +47,15 @@ export const HomeScreen = ({navigation}) => {
         return;
       }
 
-      let unsubscribeLocationChange = await Location.watchPositionAsync({accuracy: Location.Accuracy.BestForNavigation, activityType: Location.ActivityType.Fitness, distanceInterval: 1}, (loc) => {
+      let unsubscribeLocationChange = await Location.watchPositionAsync({accuracy: Location.Accuracy.Highest, activityType: Location.ActivityType.Fitness, distanceInterval: 2}, (loc) => {
         setRegion({
           latitude: loc.coords.latitude,
           longitude: loc.coords.longitude,
-          latitudeDelta: region ? region.latitudeDelta||0.025:0.025,
-          longitudeDelta: region ? region.longitudeDelta||0.025:0.025,
+          latitudeDelta: region ? region.latitudeDelta||0.01:0.01,
+          longitudeDelta: region ? region.longitudeDelta||0.01:0.01,
         })
         if (centered || location == null) {
-          console.log("changing display region")
+          //console.log("changing display region")
           
           /*if (displayRegion == null) displayRegion = new MapView.AnimatedRegion({
             latitude: loc.coords.latitude,
@@ -66,16 +66,14 @@ export const HomeScreen = ({navigation}) => {
           /*displayRegion.timing({...{
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,
-            latitudeDelta: 0.025,
-            longitudeDelta: 0.025,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
           }, duration: 2000 })
           .start();*/
         }
         if (location == null) setAnimatedRegionChange(true)
-        console.log("location update")
+        //console.log("location update")
         if (updateCount < 100) setUpdateCount(prev => prev+1)
-        else setUpdateCount(0)
-        console.log(updateCount)
         setLocation(loc);
       });
       return unsubscribeLocationChange
@@ -99,24 +97,16 @@ export const HomeScreen = ({navigation}) => {
   })
 
   useEffect(() => {
-    if (!isAtParty && location && parties && parties.length > 0 && updateCount>100) {
+    if (!isAtParty && location && parties && parties.length > 0 && updateCount>0 && updateCount%100 == 0) {
       refresh().then((docs) => {
         if (docs.length > 0 && docs[0].distance < 0.1) atParty()
       }).catch(() => {})
     } else if (isAtParty && location) {
       if (distance(isAtParty.loc, location.coords) > 0.1) leaveParty(isAtParty.id)
-    } else if (location && updateCount>100) refresh()
+    } else if (location && updateCount>0 && updateCount%100 == 0) refresh()
   }, [location, isAtParty])
 
   const reCenter = () => {
-    
-    /*displayRegion.timing({...{
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      latitudeDelta: 0.025,
-      longitudeDelta: 0.025,
-    }, duration: 2000 })
-    .start();*/
     setCentered(true)
   }
 
@@ -124,16 +114,16 @@ export const HomeScreen = ({navigation}) => {
     if (location && centered && isAtParty) {
       setAnimatedRegionChange(true)
       setRegion({
-        latitude: location.coords.latitude-0.025/10,
+        latitude: location.coords.latitude-0.01/10,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
       })
       if (mapRef.current) mapRef.current.animateToRegion({
-        latitude: location.coords.latitude-0.025/10,
+        latitude: location.coords.latitude-0.01/10,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
       }, 500)
       
     } /*else if (location && centered && isAtParty && !panelOpen) {
@@ -142,28 +132,28 @@ export const HomeScreen = ({navigation}) => {
       setRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
       })
       mapRef.current.animateToRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
       }, 500)
     } */else if (location && centered && !isAtParty) {
       setRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
       })
       setAnimatedRegionChange(true)
       mapRef.current.animateToRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
       }, 500)
     }
     
@@ -172,11 +162,11 @@ export const HomeScreen = ({navigation}) => {
   const sameCoords = (r) => {
     if (!location) return true
     const tol = 0.000001
-    return (Math.abs(r.latitude-location.coords.latitude) < tol || Math.abs(r.latitude-(location.coords.latitude-0.025/10))<tol) && Math.abs(r.longitude-location.coords.longitude)<tol
+    return (Math.abs(r.latitude-location.coords.latitude) < tol || Math.abs(r.latitude-(location.coords.latitude-0.01/10))<tol) && Math.abs(r.longitude-location.coords.longitude)<tol
   }
 
   const regionChange = (r) => {
-    console.log(`loc: ${location} !sameCoords: ${!sameCoords(r)} !animated: ${!animatedRegionChange} && !refresh: ${!refreshing}`)
+    console.log(`loc: (${location.coords.latitude}, ${location.coords.longitude}) !sameCoords: ${!sameCoords(r)} !animated: ${!animatedRegionChange} && !refresh: ${!refreshing}`)
     setRegion(r)
     if (centered && location && !sameCoords(r) && !animatedRegionChange && !refreshing) {
       
@@ -185,17 +175,11 @@ export const HomeScreen = ({navigation}) => {
     }
     if (animatedRegionChange || sameCoords(r)) {
       setAnimatedRegionChange(false)
-      setCentered(true)
+      //setCentered(true)
     }
   }
 
-  const handleLogout = () => {
-    signOut(auth).catch(error => console.log('Error logging out: ', error));
-  };
-
   const atParty = () => {
-
-    console.log("amazing")
     setPartyLoading(true)
     setShoot(true)
     attendParty(parties, location.coords).then(() => {
