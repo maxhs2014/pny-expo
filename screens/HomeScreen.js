@@ -37,7 +37,7 @@ export const HomeScreen = ({navigation}) => {
   const confetti = useRef()
   const [shoot, setShoot] = useState(false)
   const [animatedRegionChange, setAnimatedRegionChange] = useState(false)
-  const [updateCount, setUpdateCount] = useState(0)
+  const [updateCount, setUpdateCount] = useState(-1)
 
   useEffect(() => {
     (async () => {
@@ -97,14 +97,22 @@ export const HomeScreen = ({navigation}) => {
   })
 
   useEffect(() => {
-    if (!isAtParty && location && parties && parties.length > 0 && updateCount>0 && updateCount%100 == 0) {
-      refresh().then((docs) => {
-        if (docs.length > 0 && docs[0].distance < 0.1) atParty()
-      }).catch(() => {})
+    console.log(`${location} ${updateCount%100 == 0}`)
+    if (!isAtParty && location && parties && parties.length > 0 && updateCount%100 == 0) {
+      refresh()
     } else if (isAtParty && location) {
       if (distance(isAtParty.loc, location.coords) > 0.1) leaveParty(isAtParty.id)
-    } else if (location && updateCount>0 && updateCount%100 == 0) refresh()
+    } else if (location && updateCount%100 == 0) {
+      console.log("useEffect refreshing")
+      refresh()
+    }
   }, [location, isAtParty])
+
+  useEffect(() => {
+    if (!isAtParty && location && parties && parties.length > 0) {
+      if (parties.length > 0 && parties[0].distance < 0.1) atParty()
+    }
+  }, [parties])
 
   const reCenter = () => {
     setCentered(true)
@@ -182,10 +190,10 @@ export const HomeScreen = ({navigation}) => {
   const atParty = () => {
     setPartyLoading(true)
     setShoot(true)
-    attendParty(parties, location.coords).then(() => {
+    refresh().then(() => attendParty(parties, location.coords).then(() => {
       setPartyLoading(false)
       refresh()
-    }).catch(() => setPartyLoading(false))
+    }).catch(() => setPartyLoading(false)))
   }
   useEffect(() => {
     if (isAtParty && location) {
@@ -194,11 +202,12 @@ export const HomeScreen = ({navigation}) => {
         var ps = [...prev]
         const idx = ps.findIndex(p => p.id == isAtParty.id)
         console.log("updated party at "+idx)
-        ps[idx] = {...isAtParty,  distance: distance(isAtParty.loc, location.coords), radius: partySize(isAtParty), color: partyColor(isAtParty)}
+        if (idx != -1) ps[idx] = {...isAtParty,  distance: distance(isAtParty.loc, location.coords), radius: partySize(isAtParty), color: partyColor(isAtParty)}
+        else if (ps.length == 0) ps = [{...isAtParty,  distance: distance(isAtParty.loc, location.coords), radius: partySize(isAtParty), color: partyColor(isAtParty)}]
         return ps
       })
     }
-  }, [isAtParty])
+  }, [isAtParty, location])
   useEffect(() => {
     AsyncStorage.getItem("em#").then((num) => {if (num) {
         console.log(num)
@@ -260,7 +269,7 @@ export const HomeScreen = ({navigation}) => {
       ),
       title: isAtParty ? "Party Mode" : "Party Near You"
     });
-  }, [navigation, isAtParty]);
+  }, [navigation, isAtParty, userData]);
   const changeInfo = (field) => {
     if (userData && isAtParty[field] && isAtParty[field].indexOf(userData.id) == -1) {
       reportInfo(isAtParty.id, field)
@@ -317,6 +326,12 @@ export const HomeScreen = ({navigation}) => {
               <Text style={{marginLeft: 4, fontSize: 17, color: "#fff"}}>{Object.keys(isAtParty).filter(field => field.substring(0, 5) == "user_" && isAtParty[field]).length || 0}</Text>
             </TouchableOpacity>
           </View>
+          <View style={{flexDirection: 'row', alignItems: "center", justifyContent: "center"}}>
+            <TouchableOpacity onPress={() => navigation.navigate("Party Comments", {party: isAtParty})} style={{flexDirection: 'row', alignItems: "center", paddingHorizontal: 20, paddingVertical: 8}}>
+              <Icon name="chat" size={20} color={colors.text}/>
+              <Text style={{marginLeft: 4, fontSize: 17, color: "#fff"}}>{isAtParty && isAtParty.comments ? isAtParty.comments.length : 0}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={{margin: 32, marginTop: 0}}>
           {/*<IOSButton style="filled" ap="warning" title="Report Police" onPress={() => reportInfo(isAtParty.id, "police")}/>*/}
@@ -342,7 +357,7 @@ export const HomeScreen = ({navigation}) => {
       </View>}
       {shoot &&
       <ConfettiCannon
-        count={200}
+        count={100}
         origin={{x: 200, y: 0}}
         onAnimationEnd={() => setShoot(false)}
         ref={confetti}

@@ -22,6 +22,7 @@
     "expo-location": "~13.0.4",
     "expo-notifications": "~0.13.3",
     "expo-tracking-transparency": "~2.0.3",
+    "expo-updates": "~0.10.15",
     "firebase": "9.2.0",
     "formik": "2.1.4",
     "geofire": "^5.2.0",

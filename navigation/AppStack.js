@@ -7,6 +7,7 @@ import { ProfileScreen } from '../screens/ProfileScreen';
 import { FriendsScreen } from '../screens/FriendsScreen';
 import { AddFriendScreen } from '../screens/AddFriendScreen';
 import { PartyPeopleScreen } from '../screens/PartyPeopleScreen';
+import { PartyCommentsScreen } from '../screens/PartyCommentsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export const AppStack = () => {
       </Stack.Group>
       <Stack.Group screenOptions={{ headerLargeTitle: true, presentation: "modal" }}>
       <Stack.Screen name='Party Info' component={PartyInfoScreen} />
+      <Stack.Screen name='Party Comments' component={PartyCommentsScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Friends" component={FriendsScreen} />
       <Stack.Screen name="AddFriend" component={AddFriendScreen} />

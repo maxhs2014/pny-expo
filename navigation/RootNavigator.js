@@ -31,9 +31,6 @@ export const RootNavigator = () => {
   const atParty = useAtParty()
   const [loaded, userData, filled] = useUserData()
 
-  setTestDeviceIDAsync('EMULATOR')
-
-
   useEffect(() => {
     // onAuthStateChanged returns an unsubscriber
     const unsubscribeAuthStateChanged = onAuthStateChanged(

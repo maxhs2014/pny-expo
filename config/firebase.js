@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { query, collection, endAt, orderBy, startAt, onSnapshot, getFirestore, getDocs, getDoc, doc, addDoc, setDoc, updateDoc, where, arrayUnion, arrayRemove, increment } from "@firebase/firestore";
 import Constants from 'expo-constants';
+import * as Updates from 'expo-updates';
 const geofire = require("geofire-common")
 
 // add firebase config
@@ -13,7 +14,7 @@ const geofire = require("geofire-common")
   messagingSenderId: Constants.manifest.extra.messagingSenderId,
   appId: Constants.manifest.extra.appId
 };*/
-const firebaseConfig = {
+const firebaseConfigProd = {
   apiKey: "AIzaSyAAhzSqfeYVBD6rL9Fl5K1kmMj6hA3NWV0",
   authDomain: "party-near-you-710cf.firebaseapp.com",
   projectId: "party-near-you-710cf",
@@ -23,8 +24,18 @@ const firebaseConfig = {
   measurementId: "G-6RD2P9HVC0"
 };
 
+const firebaseConfigStaging = {
+  apiKey: "AIzaSyDJQlNdgqYQq60gGvlGTalDeCmji-M3I6Q",
+  authDomain: "party-near-you-staging.firebaseapp.com",
+  projectId: "party-near-you-staging",
+  storageBucket: "party-near-you-staging.appspot.com",
+  messagingSenderId: "717217635896",
+  appId: "1:717217635896:web:dbe03cd35bf25d8d0a90cd",
+  measurementId: "${config.measurementId}"
+}
+
 // initialize firebase
-initializeApp(firebaseConfig);
+initializeApp(Updates.releaseChannel == "stag" ? firebaseConfigStaging : firebaseConfigProd);
 
 // initialize auth
 const auth = getAuth();
@@ -89,6 +100,13 @@ export function leaveParty(id) {
   const update = {}
   update["user_"+uid] = false
   return updateDoc(doc(firestore, "parties", id), update)
+}
+
+export function addComment(msg, party) {
+  const newComment = {msg, time: new Date().getTime()}
+  var updates = {comments: arrayUnion(newComment)}
+  if (party.comments == undefined) updates = {comments: [newComment]}
+  return updateDoc(doc(firestore, "parties", party.id), updates)
 }
 
 export function distance(coords1, coords2) {
