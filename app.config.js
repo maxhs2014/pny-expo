@@ -6,6 +6,7 @@ export default {
     slug: 'party',
     privacy: 'unlisted',
     platforms: ['ios', 'android'],
+    
     plugins: [
       [
         "expo-ads-admob",
@@ -20,7 +21,8 @@ export default {
         }
       ]
     ],
-    version: '1.0.0',
+    version: '1.0.1',
+    sdkVersion: "43.0.0",
     orientation: 'portrait',
     icon: './assets/PNY.png',
     splash: {
@@ -39,7 +41,7 @@ export default {
     },
     ios: {
       supportsTablet: false,
-      buildNumber: "24",
+      buildNumber: "25",
       bundleIdentifier: "com.partynearyou.app",
       config: {
         googleMobileAdsAppId: "ca-app-pub-5790083206239403~2410650773" // sample id, replace with your own
