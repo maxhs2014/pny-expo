@@ -109,7 +109,7 @@ export const PartyInfoScreen = ({navigation, route}) => {
       </View>*/}
         <View style={{margin: 32}}>
           <IOSButton style="filled" ap="primary" title="Directions" onPress={() => openDirections()}/>
-          <IOSButton style="filled" ap="primary" title={`Comments${party.comments && party.comments.length > 0 && " ("+party.comments.length+")"}`} onPress={() => navigation.navigate("Party Comments", {party: party})} top/>
+          <IOSButton style="filled" ap="primary" title={`Comments${party.comments && party.comments.length > 0 ? " ("+party.comments.length+")":""}`} onPress={() => navigation.navigate("Party Comments", {party: party})} top/>
         </View>
         
         <View style={{marginHorizontal: 16}}>
